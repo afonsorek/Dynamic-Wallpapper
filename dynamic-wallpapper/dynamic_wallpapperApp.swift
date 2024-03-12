@@ -11,7 +11,7 @@ import SwiftUI
 struct dynamic_wallpapperApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ImageSelectorView()
         }
     }
 }
