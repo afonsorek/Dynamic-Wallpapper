@@ -6,13 +6,17 @@
 //
 import Foundation
 import SwiftUI
+import CoreImage
+import CoreGraphics
+
 
 struct ImageSelectorView: View {
     @State var lightImage: NSImage?
     @State var darkImage: NSImage?
-    
     @State var count = 0
-
+    
+    @State var images:[Data] = []
+    
     var body: some View {
         VStack{
             HStack(spacing: 100){
@@ -52,6 +56,9 @@ struct ImageSelectorView: View {
                 //
                 xpmInjection(nsImage: darkImage, isLight: false)
                 xpmInjection(nsImage: lightImage, isLight: true)
+                DispatchQueue.main.asyncAfter(deadline: .now()+1){
+                    convertToHEIC()
+                }
             }
         }
     }
@@ -87,9 +94,50 @@ struct ImageSelectorView: View {
         }
       }
     }
+    
+    func convertToHEIC(){
+        let heicURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("dynamic_wallpapper.heic")
+        
+        let tiff1 = NSImage(data: images[0])
+        let tiff2 = NSImage(data: images[1])
+        
+        let combinedImage: () = encodeToHEIC(image1: tiff1!, image2: tiff2!, outputURL: heicURL)
 
+    }
+    
+    func encodeToHEIC(image1: NSImage, image2: NSImage, outputURL: URL) {
+        guard let imageData1 = image1.tiffRepresentation,
+            let imageData2 = image2.tiffRepresentation,
+            let bitmap1 = NSBitmapImageRep(data: imageData1),
+            let bitmap2 = NSBitmapImageRep(data: imageData2) else {
+                print("Error: Couldn't create bitmap representations")
+                return
+        }
+
+        let context = CIContext()
+
+        guard let inputImage1 = CIImage(bitmapImageRep: bitmap1),
+            let inputImage2 = CIImage(bitmapImageRep: bitmap2) else {
+                print("Error: Couldn't create CIImage from bitmaps")
+                return
+        }
+
+        // Composite the two images
+        let outputImage = inputImage2.composited(over: inputImage1)
+
+        do {
+            // Save the composited image as HEIC
+            try context.writeHEIFRepresentation(of: outputImage, to: outputURL, format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!, options: [:])
+            print("HEIC file saved successfully at \(outputURL)")
+        } catch {
+            print("Error saving HEIC file: \(error.localizedDescription)")
+        }
+    }
+
+
+    
     func xpmInjection(nsImage: NSImage?, isLight: Bool) {
-        let xpmWriteData = """
+        let xpmWriteData : Data = """
 <?xpacket?>
 <x:xmpmeta xmlns:x="adobe:ns:meta">
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns">
@@ -98,31 +146,45 @@ apple_desktop:apr=
 "YnBsaXN0MDDSAQMCBFFsEAFRZBAACA0TEQ/REMOVE/8BAQAAAAAAAAAFAAAAAAAAAAAAAAAAAAAAFQ=="/>
 </rdf:RDF>
 </x:xmpmeta>
-"""
+""".data(using: .ascii)!
+        
         let xpmURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent(isLight ? "light_image.xpm" : "dark_image.xpm")
+        let tiffURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent(isLight ? "1.tiff" : "2.tiff")
         let imageURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent(isLight ? "light_image.png" : "dark_image.png")
-        if let png = nsImage!.png {
+        
+        
+        if var png = nsImage!.png {
             do {
                 try png.write(to: imageURL)
-                print(png)
-                print("PNG image saved at \(imageURL)")
             } catch {
                 print(error)
             }
             
             do{
-                try FileManager.default.currentDirectoryPath.write(to: xpmURL, atomically: true, encoding: xpmWriteData.smallestEncoding)
-                print("Dados injetados com sucesso em \(xpmURL)")
-                print(try Data(contentsOf: xpmURL).base64EncodedString())
+                try xpmWriteData.write(to: xpmURL)
             }catch{
-                return
+                print(error)
             }
             
             do{
-                try FileManager.default.currentDirectoryPath.write(to: imageURL, atomically: true, encoding: try Data(contentsOf: xpmURL).base64EncodedString().smallestEncoding)
-                print(try Data(contentsOf: imageURL).base64EncodedString())
+                try png.append(Data(contentsOf: xpmURL))
+                try png.write(to: imageURL)
             }catch{
-                return
+                print(error)
+            }
+            
+            if let tiff = png.bitmap?.tiff{
+                do{
+                    //Salva o tiff
+                    try tiff.write(to: tiffURL)
+                    var tiffData = try Data(contentsOf: tiffURL)
+                    //ELE SALVA COMO TIFF
+//                    var heicData = try Data(contentsOf: heicURL)
+//                    heicData.append(try Data(contentsOf: tiffURL))
+                    images.append(tiffData)
+                }catch{
+                    print(error)
+                }
             }
         }
         
