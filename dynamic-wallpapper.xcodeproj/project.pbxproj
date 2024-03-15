@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A93D54382BA470060094ACA7 /* libheif in Frameworks */ = {isa = PBXBuildFile; productRef = A93D54372BA470060094ACA7 /* libheif */; };
+		A93D543D2BA47E230094ACA7 /* heif-enc in Resources */ = {isa = PBXBuildFile; fileRef = A93D543C2BA47E230094ACA7 /* heif-enc */; };
 		A97B2AD82B9FACA600F0FA5B /* dynamic_wallpapperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97B2AD72B9FACA600F0FA5B /* dynamic_wallpapperApp.swift */; };
 		A97B2ADA2B9FACA600F0FA5B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97B2AD92B9FACA600F0FA5B /* ContentView.swift */; };
 		A97B2ADC2B9FACA700F0FA5B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A97B2ADB2B9FACA700F0FA5B /* Assets.xcassets */; };
@@ -17,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A93D543C2BA47E230094ACA7 /* heif-enc */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "heif-enc"; path = "../../../../../opt/homebrew/Cellar/libheif/1.17.6/bin/heif-enc"; sourceTree = "<group>"; };
+		A93D543E2BA47E260094ACA7 /* heif-enc */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "heif-enc"; sourceTree = "<group>"; };
 		A97B2AD42B9FACA600F0FA5B /* dynamic-wallpapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "dynamic-wallpapper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A97B2AD72B9FACA600F0FA5B /* dynamic_wallpapperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dynamic_wallpapperApp.swift; sourceTree = "<group>"; };
 		A97B2AD92B9FACA600F0FA5B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -33,15 +37,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A93D54382BA470060094ACA7 /* libheif in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A93D54392BA47CF50094ACA7 /* opt */ = {
+			isa = PBXGroup;
+			children = (
+				A93D543C2BA47E230094ACA7 /* heif-enc */,
+			);
+			path = opt;
+			sourceTree = "<group>";
+		};
 		A97B2ACB2B9FACA600F0FA5B = {
 			isa = PBXGroup;
 			children = (
+				A93D543E2BA47E260094ACA7 /* heif-enc */,
+				A93D54392BA47CF50094ACA7 /* opt */,
 				A97B2AD62B9FACA600F0FA5B /* dynamic-wallpapper */,
 				A97B2AD52B9FACA600F0FA5B /* Products */,
 				A9E58EEF2B9FDCE7004D1B98 /* Frameworks */,
@@ -110,6 +125,9 @@
 			dependencies = (
 			);
 			name = "dynamic-wallpapper";
+			packageProductDependencies = (
+				A93D54372BA470060094ACA7 /* libheif */,
+			);
 			productName = "dynamic-wallpapper";
 			productReference = A97B2AD42B9FACA600F0FA5B /* dynamic-wallpapper.app */;
 			productType = "com.apple.product-type.application";
@@ -138,6 +156,10 @@
 				Base,
 			);
 			mainGroup = A97B2ACB2B9FACA600F0FA5B;
+			packageReferences = (
+				A93D541D2BA1DED20094ACA7 /* XCRemoteSwiftPackageReference "FFmpegKit" */,
+				A93D54362BA470060094ACA7 /* XCRemoteSwiftPackageReference "libheif-Xcode" */,
+			);
 			productRefGroup = A97B2AD52B9FACA600F0FA5B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -154,6 +176,7 @@
 			files = (
 				A97B2ADF2B9FACA700F0FA5B /* Preview Assets.xcassets in Resources */,
 				A97B2ADC2B9FACA700F0FA5B /* Assets.xcassets in Resources */,
+				A93D543D2BA47E230094ACA7 /* heif-enc in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -369,6 +392,33 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A93D541D2BA1DED20094ACA7 /* XCRemoteSwiftPackageReference "FFmpegKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kingslay/FFmpegKit.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		A93D54362BA470060094ACA7 /* XCRemoteSwiftPackageReference "libheif-Xcode" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/libheif-Xcode.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.16.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A93D54372BA470060094ACA7 /* libheif */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A93D54362BA470060094ACA7 /* XCRemoteSwiftPackageReference "libheif-Xcode" */;
+			productName = libheif;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A97B2ACC2B9FACA600F0FA5B /* Project object */;
 }
